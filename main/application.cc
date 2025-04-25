@@ -386,7 +386,8 @@ void Application::Start() {
         Schedule([this]() {
             auto display = Board::GetInstance().GetDisplay();
             display->SetChatMessage("system", "");
-            SetDeviceState(kDeviceStateIdle);
+            if (device_state_ != kDeviceStateAlwaysListening) { // 常听模式不重置状态
+                SetDeviceState(kDeviceStateIdle);
         });
     });
     protocol_->OnIncomingJson([this, display](const cJSON* root) {
