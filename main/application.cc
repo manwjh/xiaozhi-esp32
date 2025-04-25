@@ -493,7 +493,8 @@ void Application::Start() {
     wake_word_detect_.Initialize(codec);
     wake_word_detect_.OnWakeWordDetected([this](const std::string& wake_word) {
         Schedule([this, &wake_word]() {
-            if (device_state_ == kDeviceStateIdle) {
+            if (device_state_ == kDeviceStateIdle || device_state_ == kDeviceStateAlwaysListening) {
+                // wjh,常听模式下也响应唤醒词
                 SetDeviceState(kDeviceStateConnecting);
                 wake_word_detect_.EncodeWakeWordData();
 
@@ -602,7 +603,8 @@ void Application::OnAudioOutput() {
     std::unique_lock<std::mutex> lock(mutex_);
     if (audio_decode_queue_.empty()) {
         // Disable the output if there is no audio data for a long time
-        if (device_state_ == kDeviceStateIdle) {
+        if (device_state_ == kDeviceStateIdle || device_state_ == kDeviceStateAlwaysListening) {
+            // wjh,常听模式也检查超时
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - last_output_time_).count();
             if (duration > max_silence_seconds) {
                 codec->EnableOutput(false);
