@@ -36,6 +36,7 @@ enum DeviceState {
     kDeviceStateIdle,
     kDeviceStateConnecting,
     kDeviceStateListening,
+    kDeviceStateAlwaysListening, // wjh,新增常听状态
     kDeviceStateSpeaking,
     kDeviceStateUpgrading,
     kDeviceStateActivating,
